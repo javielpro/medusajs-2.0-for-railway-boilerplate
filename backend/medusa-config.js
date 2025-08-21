@@ -135,7 +135,13 @@ const medusaConfig = {
     }] : [])
   ],
   plugins: [
-  ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
+    // --- Your custom Platform Fee plugin ---
+    {
+      resolve: "./plugins/platform-fee",
+    },
+
+    // --- Existing Meilisearch plugin ---
+    ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
       resolve: '@rokmohar/medusa-plugin-meilisearch',
       options: {
         config: {
@@ -158,6 +164,7 @@ const medusaConfig = {
       }
     }] : [])
   ]
+
 };
 
 console.log(JSON.stringify(medusaConfig, null, 2));
