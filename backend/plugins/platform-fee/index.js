@@ -1,3 +1,5 @@
+import { Router } from "express"
+
 class PlatformFeeService {
   constructor() {
     this.enabled = false
@@ -13,17 +15,33 @@ class PlatformFeeService {
   }
 }
 
-export default (container, options) => {
+export default async function platformFeePlugin(container) {
   const feeService = new PlatformFeeService()
-  container.register("platformFeeService", feeService)
 
-  const router = container.resolve("router")
-
-  router.get("/store/platform-fee", (req, res) => {
+  // API routes
+  const storeRouter = Router()
+  storeRouter.get("/platform-fee", (req, res) => {
     res.json({ enabled: feeService.getStatus() })
   })
 
-  router.post("/admin/platform-fee/toggle", (req, res) => {
+  const adminRouter = Router()
+  adminRouter.post("/platform-fee/toggle", (req, res) => {
     res.json({ enabled: feeService.toggle() })
   })
+
+  return {
+    service: feeService,
+    storeRoutes: [
+      {
+        path: "/store",
+        router: storeRouter,
+      },
+    ],
+    adminRoutes: [
+      {
+        path: "/admin",
+        router: adminRouter,
+      },
+    ],
+  }
 }
